@@ -113,8 +113,14 @@ int main() {
     CUDA_CHECK(cudaMemcpy(d_Z, h_Z, sz_Z * sizeof(float), cudaMemcpyHostToDevice));
     CUDA_CHECK(cudaMemcpy(d_W, h_W, sz_W * sizeof(float), cudaMemcpyHostToDevice));
 
+    // ── timing setup ──────────────────────────────────────────────────────────
+    cudaEvent_t t_start, t_stop;
+    CUDA_CHECK(cudaEventCreate(&t_start));
+    CUDA_CHECK(cudaEventCreate(&t_stop));
+
     // ── kernel 1: compute partial sums → int_res[l1*NL2+l2] ─────────────────
     printf("\n--- kernel 1 ---\n");
+    CUDA_CHECK(cudaEventRecord(t_start));
     matmul_1<<<GRID1, BLOCK1>>>(d_Z, d_W, d_res, d_int, d_orig);
     CUDA_CHECK(cudaGetLastError());
     CUDA_CHECK(cudaDeviceSynchronize());
@@ -140,6 +146,8 @@ int main() {
     matmul_2<<<GRID2, BLOCK2>>>(d_int, d_res, d_S, d_orig);
     CUDA_CHECK(cudaGetLastError());
     CUDA_CHECK(cudaDeviceSynchronize());
+    CUDA_CHECK(cudaEventRecord(t_stop));
+    CUDA_CHECK(cudaEventSynchronize(t_stop));
 
     CUDA_CHECK(cudaMemcpy(h_res, d_S, sz_res * sizeof(float), cudaMemcpyDeviceToHost));
 
@@ -160,8 +168,19 @@ int main() {
 
     printf("Elements checked: %d  Max error: %.2e  Mismatches: %d\n",
            sz_res, max_err, mismatch);
-    printf("%s\n", mismatch == 0 ? "PASS" : "FAIL");
 
+    float gpu_ms = 0.0f;
+    CUDA_CHECK(cudaEventElapsedTime(&gpu_ms, t_start, t_stop));
+
+    if (mismatch == 0) {
+        printf("Matrix Multiplication (MDH) is SUCCESSFUL!\n");
+        printf("GPU time measurement (MDH): %f ms\n", gpu_ms);
+    } else {
+        printf("Matrix Multiplication (MDH) FAILED - %d mismatches\n", mismatch);
+    }
+
+    cudaEventDestroy(t_start);
+    cudaEventDestroy(t_stop);
     cudaFree(d_Z); cudaFree(d_W);
     cudaFree(d_res); cudaFree(d_int); cudaFree(d_S); cudaFree(d_orig);
     delete[] h_int;
