@@ -197,6 +197,14 @@ nvcc test_matmul.cu matmul_1.cu matmul_2.cu -o test_matmul \
 
 The small floating-point error (5.72e-06) is normal IEEE-754 rounding from parallel reduction - not a correctness issue.
 
+### GPU timing - ✅ Matrix Multiplication (MDH) is SUCCESSFUL!
+
+| Metric | Value |
+|---|---|
+| Both kernels (K1 + K2) | 0.085312 ms |
+| GPU | NVIDIA (CUDA 11.7) |
+| Measurement method | `cudaEventElapsedTime` (GPU clock, pure compute time) |
+
 ---
 
 ## How the two-kernel design works
