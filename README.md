@@ -191,14 +191,12 @@ nvcc test_matmul.cu matmul_1.cu matmul_2.cu -o test_matmul \
 | Kernel 2 grid | (1, 32, 2) |
 | Kernel 2 block | (1, 32, 4) |
 
-| Check | Result |
-|---|---|
-| Kernel 1 - elements checked | 5000 |
-| Kernel 1 - max error | 5.72e-06 |
-| Kernel 1 - mismatches | 0 - PASS |
-| Kernel 2 - elements checked | 5000 |
-| Kernel 2 - max error | 5.72e-06 |
-| Kernel 2 - mismatches | 0 - PASS |
+### Kernel output check - ✅ All kernels passed
+
+| Kernel | Elements Checked | Max Error | Mismatches | Status |
+|---|---|---|---|---|
+| Kernel 1 | 5000 | 5.72e-06 | 0 | ✅ PASS |
+| Kernel 2 | 5000 | 5.72e-06 | 0 | ✅ PASS |
 
 The small floating-point error (5.72e-06) is normal IEEE-754 rounding from parallel reduction - not a correctness issue.
 
