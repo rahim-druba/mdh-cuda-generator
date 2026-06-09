@@ -1,19 +1,20 @@
-# How to Generate matmul CUDA Kernels in a New Folder
+# How to Generate and Test matmul CUDA Kernels
 
+Copy and paste each command block into your terminal one by one.
 
+---
 
-## Step 1 — Create the folder and go into it
+## Step 1 - Go into the demo folder
 
 ```bash
-mkdir ~/CUDAAA
 cd ~/CUDAAA
 ```
 
 ---
 
-## Step 2 — Run the CUDA generator
+## Step 2 - Run the CUDA generator
 
-The generator binary is already compiled. Running it from inside `CUDAAA` makes it write the output files there.
+The generator binary is already compiled. Running it from inside `CUDAAA` writes the output files here.
 
 ```bash
 /home/rahim/mdh-cuda-generator/build/matmul
@@ -21,7 +22,7 @@ The generator binary is already compiled. Running it from inside `CUDAAA` makes 
 
 ---
 
-## Step 3 — Confirm the files were created
+## Step 3 - Confirm the files were created
 
 ```bash
 ls -lh ~/CUDAAA/*.cu
@@ -29,13 +30,13 @@ ls -lh ~/CUDAAA/*.cu
 
 You should see two files:
 ```
-matmul_1.cu   (~20 MB)   ← kernel 1: main computation
-matmul_2.cu   (~14 MB)   ← kernel 2: final reduction
+matmul_1.cu   (~20 MB)   - kernel 1: main computation
+matmul_2.cu   (~14 MB)   - kernel 2: final reduction
 ```
 
 ---
 
-## Step 4 — Peek at the kernel signatures (optional sanity check)
+## Step 4 - Peek at the kernel signatures (optional sanity check)
 
 ```bash
 grep "__global__ void matmul_1" ~/CUDAAA/matmul_1.cu
@@ -50,7 +51,7 @@ __global__ void matmul_2(TYPE_T const * const __restrict__ int_res, ...
 
 ---
 
-## Step 5 — Confirm no OpenCL leftovers (optional)
+## Step 5 - Confirm no OpenCL leftovers (optional)
 
 ```bash
 grep -c "__kernel\|get_global_id\|CLK_LOCAL_MEM_FENCE\|__local\b" ~/CUDAAA/matmul_1.cu
@@ -61,11 +62,9 @@ Both should print `0`.
 
 ---
 
-## Step 6 — Compile both kernels with nvcc (requires CUDA toolkit)
+## Step 6 - Compile both kernels with nvcc (requires CUDA toolkit)
 
 ```bash
-cd ~/CUDAAA
-
 nvcc -c matmul_1.cu -o matmul_1.o \
   -DTYPE_T=float -DTYPE_TS=float \
   -DCACHE_L_CB=0 -DCACHE_P_CB=0 \
@@ -99,7 +98,7 @@ No errors means the kernels compile correctly.
 
 ---
 
-## Step 7 — Run the full correctness test (requires an NVIDIA GPU)
+## Step 7 - Run the full correctness and timing test (requires an NVIDIA GPU)
 
 Copy the test harness into CUDAAA, then build and run:
 
@@ -108,8 +107,6 @@ cp /home/rahim/mdh-cuda-generator/build/test_matmul.cu ~/CUDAAA/
 ```
 
 ```bash
-cd ~/CUDAAA
-
 nvcc test_matmul.cu matmul_1.cu matmul_2.cu -o test_matmul \
   -DTYPE_T=float -DTYPE_TS=float \
   -DCACHE_L_CB=0 -DCACHE_P_CB=0 \
@@ -137,25 +134,36 @@ int_res: Elements=5000  Max error=5.72e-06  Mismatches=0  -> PASS
 --- kernel 2 ---
 --- final result (S after kernel 2) ---
 Elements checked: 5000  Max error: 5.72e-06  Mismatches: 0
-PASS
+Matrix Multiplication (MDH) is SUCCESSFUL!
+GPU time measurement (MDH): 0.085312 ms
 ```
 
 ---
 
-## Quick reference — what each file does
+## To repeat the demo from scratch
+
+Delete everything inside CUDAAA and start again from Step 2:
+
+```bash
+rm -rf ~/CUDAAA/*
+```
+
+---
+
+## Quick reference - what each file does
 
 | File | What it is |
 |---|---|
-| `matmul_1.cu` | Generated CUDA kernel 1 — loads Z and W tiles into shared memory, computes partial dot products |
-| `matmul_2.cu` | Generated CUDA kernel 2 — reduces the partial results from kernel 1 into the final output matrix S |
-| `test_matmul.cu` | Test harness — launches both kernels, compares result to CPU reference matmul |
+| `matmul_1.cu` | Generated CUDA kernel 1 - loads Z and W tiles into shared memory, computes partial dot products |
+| `matmul_2.cu` | Generated CUDA kernel 2 - reduces the partial results from kernel 1 into the final output matrix S |
+| `test_matmul.cu` | Test harness - launches both kernels, checks correctness, and measures GPU execution time |
 
 ## Where the generator lives
 
 ```
-/home/rahim/mdh-cuda-generator/build/matmul        ← the generator binary
-/home/rahim/mdh-cuda-generator/include/cuda_generator.hpp   ← the CUDA backend source
-/home/rahim/mdh-cuda-generator/src/matmul/matmul.cpp        ← the MDH spec for matmul
+/home/rahim/mdh-cuda-generator/build/matmul               - the generator binary
+/home/rahim/mdh-cuda-generator/include/cuda_generator.hpp - the CUDA backend source
+/home/rahim/mdh-cuda-generator/src/matmul/matmul.cpp      - the MDH spec for matmul
 ```
 
 If you ever change the MDH spec or the generator and want to regenerate, rebuild first:
@@ -165,4 +173,4 @@ cd /home/rahim/mdh-cuda-generator/build
 make
 ```
 
-Then re-run Step 2 from inside `~/CUDAAA`.
+Then start again from Step 2 inside `~/CUDAAA`.
