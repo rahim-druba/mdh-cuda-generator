@@ -4,6 +4,14 @@ Copy and paste each command block into your terminal one by one.
 
 ---
 
+## Step 0 - Create the demo folder
+
+```bash
+mkdir ~/CUDAAA
+```
+
+---
+
 ## Step 1 - Go into the demo folder
 
 ```bash
