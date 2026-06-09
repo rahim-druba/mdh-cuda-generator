@@ -1,7 +1,7 @@
 # mdh-cuda-generator
 
 A CUDA kernel code generator for the **Multi-Dimensional Homomorphism (MDH)** framework.  
-Given a high-level C++ MDH specification, this project generates optimised `.cu` GPU kernel files ready to compile with `nvcc` — no manual CUDA kernel writing required.
+Given a high-level C++ MDH specification, this project generates optimised `.cu` GPU kernel files ready to compile with `nvcc` - no manual CUDA kernel writing required.
 
 ---
 
@@ -24,7 +24,7 @@ Multi-Dimensional Homomorphism is a mathematical abstraction for expressing a wi
 | Device functions | plain `inline` | `__device__ inline` |
 | Kernel qualifier | `__kernel void` | `__global__ void` |
 
-The CUDA backend is a drop-in addition — the original OpenCL generator is untouched and still works alongside it.
+The CUDA backend is a drop-in addition - the original OpenCL generator is untouched and still works alongside it.
 
 ---
 
@@ -193,7 +193,7 @@ Elements checked: 5000  Max error: 5.72e-06  Mismatches: 0
 PASS
 ```
 
-The small floating-point error (5.72e-06) is normal IEEE-754 rounding from parallel reduction — not a correctness issue.
+The small floating-point error (5.72e-06) is normal IEEE-754 rounding from parallel reduction - not a correctness issue.
 
 ---
 
@@ -224,8 +224,8 @@ Output: S [L1 × L2]
 
 ## Key implementation notes
 
-- **`__device__` qualifier**: Scalar functions `f()` and `g()` must be `__device__` in CUDA. The generator automatically adds this qualifier — it is absent in the OpenCL backend.
-- **Kernel 2 block size**: `blockDim.x` for kernel 2 must be `min(NUM_WI_R_1, NUM_WG_R_1)`, not `NUM_WI_R_1`. The shared reduction buffer is sized by `K2_L_NUM_FU_R_1 = min(NUM_WI_R_1, NUM_WG_R_1)` — using more threads overflows it.
+- **`__device__` qualifier**: Scalar functions `f()` and `g()` must be `__device__` in CUDA. The generator automatically adds this qualifier - it is absent in the OpenCL backend.
+- **Kernel 2 block size**: `blockDim.x` for kernel 2 must be `min(NUM_WI_R_1, NUM_WG_R_1)`, not `NUM_WI_R_1`. The shared reduction buffer is sized by `K2_L_NUM_FU_R_1 = min(NUM_WI_R_1, NUM_WG_R_1)` - using more threads overflows it.
 - **Result buffer routing**: With `L_CB_RES_DEST_LEVEL=LOCAL`, kernel 1 writes to `int_res`, not `res_g`. The `res_g` parameter exists in the signature but is unused under this configuration.
 
 ---
@@ -247,7 +247,7 @@ The MDH framework, its mathematical foundations, the OpenCL kernel generator, an
 
 > **Ari Rasch, Richard Schulze, Michel Steuwer, Sergei Gorlatch**  
 > *"Efficient Auto-Tuning of Parallel Programs with Interdependent Tuning Parameters via Auto-Tuning Framework (ATF)"*  
-> Presented at **PACT 2019** — 28th International Conference on Parallel Architectures and Compilation Techniques  
+> Presented at **PACT 2019** - 28th International Conference on Parallel Architectures and Compilation Techniques  
 > ACM, 2019.  
 > [https://dl.acm.org/doi/10.1145/3307650.3322221](https://dl.acm.org/doi/10.1145/3307650.3322221)
 
