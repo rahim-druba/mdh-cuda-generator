@@ -181,15 +181,12 @@ nvcc test_matmul.cu matmul_1.cu matmul_2.cu -o test_matmul \
 
 **Verified output (NVIDIA GPU, CUDA 11.7):**
 
-| Parameter | Value |
-|---|---|
-| L1 (batch) | 10 |
-| L2 (output features) | 500 |
-| R1 (input features) | 64 |
-| Kernel 1 grid | (1, 32, 2) |
-| Kernel 1 block | (8, 32, 4) |
-| Kernel 2 grid | (1, 32, 2) |
-| Kernel 2 block | (1, 32, 4) |
+**Config:** `L1 (batch): 10` &nbsp;|&nbsp; `L2 (output): 500` &nbsp;|&nbsp; `R1 (input): 64`
+
+| Kernel | Grid | Block |
+|---|---|---|
+| K1 | (1, 32, 2) | (8, 32, 4) |
+| K2 | (1, 32, 2) | (1, 32, 4) |
 
 ### Kernel output check - ✅ All kernels passed
 
