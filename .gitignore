@@ -1,0 +1,21 @@
+# Build system artifacts
+build/CMakeFiles/
+build/CMakeCache.txt
+build/cmake_install.cmake
+build/Makefile
+build/cmake_install.cmake
+
+# Compiled binaries and libraries
+build/matmul
+build/test_matmul
+build/libmdh_cuda_generator.a
+build/*.o
+
+# OpenCL generated output (not part of this project)
+build/*.cl
+
+# Copied original artifact (present locally for reference only)
+pact_2019_artifact/
+
+# Claude Code local settings
+.claude/
