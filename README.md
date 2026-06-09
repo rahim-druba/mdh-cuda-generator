@@ -180,18 +180,25 @@ nvcc test_matmul.cu matmul_1.cu matmul_2.cu -o test_matmul \
 ```
 
 **Verified output (NVIDIA GPU, CUDA 11.7):**
-```
-Config: L1=10  L2=500  R1=64
-K1 Grid: (1,32,2)  Block: (8,32,4)
-K2 Grid: (1,32,2)  Block: (1,32,4)
 
---- kernel 1 ---
-int_res: Elements=5000  Max error=5.72e-06  Mismatches=0  -> PASS
---- kernel 2 ---
---- final result (S after kernel 2) ---
-Elements checked: 5000  Max error: 5.72e-06  Mismatches: 0
-PASS
-```
+| Parameter | Value |
+|---|---|
+| L1 (batch) | 10 |
+| L2 (output features) | 500 |
+| R1 (input features) | 64 |
+| Kernel 1 grid | (1, 32, 2) |
+| Kernel 1 block | (8, 32, 4) |
+| Kernel 2 grid | (1, 32, 2) |
+| Kernel 2 block | (1, 32, 4) |
+
+| Check | Result |
+|---|---|
+| Kernel 1 - elements checked | 5000 |
+| Kernel 1 - max error | 5.72e-06 |
+| Kernel 1 - mismatches | 0 - PASS |
+| Kernel 2 - elements checked | 5000 |
+| Kernel 2 - max error | 5.72e-06 |
+| Kernel 2 - mismatches | 0 - PASS |
 
 The small floating-point error (5.72e-06) is normal IEEE-754 rounding from parallel reduction - not a correctness issue.
 
@@ -243,12 +250,17 @@ Output: S [L1 × L2]
 
 ## Acknowledgements
 
-The MDH framework, its mathematical foundations, the OpenCL kernel generator, and all supporting infrastructure (`ocl_generator.hpp`, `loop_generator.hpp`, `macros.hpp`, `md_hom.hpp`, `types.hpp`, and related files) are the work of the original authors:
+This project builds on prior work — the MDH framework, its mathematical foundations, the OpenCL kernel generator, and all supporting infrastructure (`ocl_generator.hpp`, `loop_generator.hpp`, `macros.hpp`, `md_hom.hpp`, `types.hpp`, and related files) were developed by Rasch, Schulze, and Gorlatch and published at PACT 2019:
 
-> **Ari Rasch, Richard Schulze, Michel Steuwer, Sergei Gorlatch**  
-> *"Efficient Auto-Tuning of Parallel Programs with Interdependent Tuning Parameters via Auto-Tuning Framework (ATF)"*  
-> Presented at **PACT 2019** - 28th International Conference on Parallel Architectures and Compilation Techniques  
-> ACM, 2019.  
-> [https://dl.acm.org/doi/10.1145/3307650.3322221](https://dl.acm.org/doi/10.1145/3307650.3322221)
+```bibtex
+@inproceedings{rasch2019mdh,
+  title={Generating Portable High-Performance Code via Multi-Dimensional Homomorphisms},
+  author={Rasch, Ari and Schulze, Richard and Gorlatch, Sergei},
+  booktitle={PACT},
+  year={2019}
+}
+```
 
-This repository extends their framework by adding a CUDA code generation backend. All original MDH framework files are included here solely to make the project self-contained and buildable, with full credit to the above authors.
+Artifact repository: [https://gitlab.com/mdh-project/pact_2019_artifact](https://gitlab.com/mdh-project/pact_2019_artifact)
+
+All MDH framework files are included here solely to make this project self-contained and buildable, with full credit to the above authors.
